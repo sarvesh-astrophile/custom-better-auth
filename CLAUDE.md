@@ -53,14 +53,23 @@ custom-better-auth/
 ├── packages/
 │   ├── backend/                # Convex backend
 │   │   └── convex/
-│   │       ├── auth.ts         # Better-Auth setup
+│   │       ├── auth.ts         # Better-Auth setup (createAuth, createAuthOptions)
 │   │       ├── auth.config.ts  # Auth configuration
 │   │       ├── schema.ts       # Database schema
-│   │       └── http.ts         # HTTP actions
+│   │       ├── http.ts         # HTTP actions
+│   │       └── betterAuth/     # Local Better Auth component
+│   │           ├── adapter.ts  # Auth API (create, findOne, findMany, etc.)
+│   │           ├── auth.ts     # Static auth instance for schema generation
+│   │           ├── convex.config.ts  # Local component definition
+│   │           └── schema.ts   # Auto-generated auth tables
 │   ├── config/                 # Shared TypeScript configs
 │   ├── env/                    # Environment variable schemas
 │   │   └── src/web.ts          # Web app env (VITE_CONVEX_URL, VITE_CONVEX_SITE_URL)
 │   └── infra/                  # Infrastructure (Alchemy deployment)
+├── .claude/commands/           # Claude Code custom commands
+│   ├── simple-ask.md           # Interactive interview command
+│   └── update-memory.md        # Memory update workflow
+├── .zed/settings.json          # Zed editor configuration
 └── turbo.json                  # Turborepo configuration
 ```
 
@@ -68,7 +77,7 @@ custom-better-auth/
 
 ```bash
 bun dev              # Start all services in dev mode
-bun dev:web          # Start only web frontend
+bun dev:web          # Start web frontend via infra package
 bun dev:server       # Start Convex backend
 bun dev:setup        # Setup Convex backend (first time)
 bun build            # Build all packages
@@ -86,6 +95,11 @@ bun destroy          # Destroy infrastructure
 
 ### Backend (packages/backend/.env.local)
 - `SITE_URL` - Site URL for Better-Auth
+
+## Generated Files (gitignored)
+- `packages/backend/convex/_generated/*` - Convex backend generated files
+- `packages/backend/convex/betterAuth/_generated/*` - Better Auth component generated files
+- `apps/web/src/routeTree.gen.ts` - TanStack Router auto-generated route tree
 
 ## Code Conventions
 
@@ -105,10 +119,20 @@ bun destroy          # Destroy infrastructure
 ## Key Features
 
 ### Authentication Flow
-- Uses `@convex-dev/better-auth` for seamless Convex integration
+- Uses `@convex-dev/better-auth` with local component setup
+- Local component in `convex/betterAuth/` for schema control
+- `createAuthOptions()` - reusable auth configuration function
+- `createAuth(ctx)` - creates auth instance with adapter
 - Client: `authClient` from `better-auth/react` with Convex plugin
 - Server: `convexBetterAuthReactStart` handler for SSR
 - Protected routes via `beforeLoad` in root route
+
+### Better Auth Schema Tables
+- **user**: name, email, emailVerified, image, createdAt, updatedAt, userId
+- **session**: expiresAt, token, createdAt, updatedAt, ipAddress, userAgent, userId
+- **account**: accountId, providerId, userId, tokens, password, createdAt, updatedAt
+- **verification**: identifier, value, expiresAt, createdAt, updatedAt
+- **jwks**: publicKey, privateKey, createdAt, expiresAt
 
 ### Routing
 - File-based routing with TanStack Router
@@ -122,6 +146,6 @@ bun destroy          # Destroy infrastructure
 
 ## Recent Changes
 
-1. **e5697cf** - Add Zed editor configuration file
-2. **b68117f** - Generate TanStack Router tree and update gitignore
-3. **1bba3d2** - Initial commit with full Better-T-Stack setup
+1. **a3e0a99** - Configure local Better Auth component and schema
+2. **e5697cf** - Add Zed editor configuration file
+3. **b68117f** - Generate TanStack Router tree and update gitignore
