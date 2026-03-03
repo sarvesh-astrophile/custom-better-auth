@@ -22,7 +22,7 @@
     "build": "turbo build",
     "check-types": "turbo check-types",
     "dev:native": "turbo -F native dev",
-    "dev:web": "turbo -F web dev",
+    "dev:web": "turbo -F @custom-better-auth/infra dev",
     "dev:server": "turbo -F @custom-better-auth/backend dev",
     "dev:setup": "turbo -F @custom-better-auth/backend dev:setup",
     "deploy": "turbo -F @custom-better-auth/infra deploy",
