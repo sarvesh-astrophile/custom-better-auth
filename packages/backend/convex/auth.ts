@@ -12,12 +12,13 @@ import authSchema from "./betterAuth/schema";
 const siteUrl = process.env.SITE_URL!;
 
 export const authComponent = createClient<DataModel, typeof authSchema>(
-	components.betterAuth,
-	{
-		local: {
-			schema: authSchema,
-		},
-	},
+  components.betterAuth,
+  {
+    local: {
+      schema: authSchema,
+    },
+    verbose: true,
+  },
 );
 
 export const createAuthOptions = () => {
