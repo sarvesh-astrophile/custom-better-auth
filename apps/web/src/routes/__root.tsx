@@ -1,12 +1,11 @@
+import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
 import type { QueryClient } from "@tanstack/react-query";
-
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import {
+	createRootRouteWithContext,
 	HeadContent,
 	Outlet,
 	Scripts,
-	createRootRouteWithContext,
 	useRouteContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
@@ -72,9 +71,21 @@ function RootDocument() {
 			initialToken={context.token}
 		>
 			<ToastProvider position="bottom-right">
-				<html lang="en" className="dark">
+				<html lang="en">
 					<head>
 						<HeadContent />
+						<script
+							// biome-ignore lint/security/noDangerouslySetInnerHtml: Required to prevent theme flash
+							dangerouslySetInnerHTML={{
+								__html: `
+									(function() {
+										const theme = localStorage.getItem('theme');
+										const isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+										if (isDark) document.documentElement.classList.add('dark');
+									})();
+								`,
+							}}
+						/>
 					</head>
 					<body>
 						<div className="grid h-svh grid-rows-[auto_1fr]">
