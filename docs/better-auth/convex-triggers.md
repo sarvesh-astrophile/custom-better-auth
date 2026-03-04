@@ -1,0 +1,43 @@
+Features
+
+Run transactional callbacks when auth data changes
+
+Triggers are a Convex-first approach to running mutations when your Better Auth data changes. Better Auth already supports this behavior for some tables through `databaseHooks` configuration, but database hooks cannot currently run in the same transaction as the original operation.
+
+Triggers run in the same transaction as the original operation, and work on any table in your Better Auth schema.
+
+To enable triggers, pass the `triggers` option to the component client config. A trigger config object has table names as keys, and each table name can be assigned an object with any of `onCreate`, `onUpdate`, or `onDelete` hooks. Throwing an error in a trigger will stop the original operation from committing.
+
+A single Better Auth endpoint or `auth.api` call can perform multiple database interactions. Throwing an error in a trigger will only ensure the database operation that triggered will fail, but any previous operations will still commit.
+
+    import { DataModel } from "./_generated/dataModel";
+    import { components } from "./_generated/api"; 
+    import { components, internal } from "./_generated/api"; 
+    import { createClient } from "@convex-dev/better-auth"; 
+    import { createClient, type AuthFunctions } from "@convex-dev/better-auth"; 
+    
+    const authFunctions: AuthFunctions = internal.auth; 
+    
+    export const authComponent = createClient<DataModel>(components.betterAuth); 
+    export const authComponent = createClient<DataModel>(components.betterAuth, {
+      authFunctions,
+      triggers: {
+        user: {
+          onCreate: async (ctx, doc) => {
+            await ctx.db.insert("posts", {
+              title: "Hello, world!",
+              authId: doc._id,
+            });
+          },
+          onUpdate: async (ctx, newDoc, oldDoc) => {
+            // Both old and new documents are available so you can compare and detect
+            // changes - you can ignore oldDoc if you don't need it.
+          },
+          onDelete: async (ctx, doc) => {
+            // The entire deleted document is available
+          },
+        },
+      },
+    });
+    
+    export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();
