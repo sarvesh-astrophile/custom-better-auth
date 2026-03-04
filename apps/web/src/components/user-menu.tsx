@@ -2,45 +2,45 @@ import { api } from "@custom-better-auth/backend/convex/_generated/api";
 import { useQuery } from "convex/react";
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+	Menu,
+	MenuGroup,
+	MenuGroupLabel,
+	MenuItem,
+	MenuPopup,
+	MenuSeparator,
+	MenuTrigger,
+} from "@/components/ui/menu";
 import { authClient } from "@/lib/auth-client";
 
 import { Button } from "./ui/button";
 
 export default function UserMenu() {
-  const user = useQuery(api.auth.getCurrentUser);
+	const user = useQuery(api.auth.getCurrentUser);
 
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="outline" />}>{user?.name}</DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-card">
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>{user?.email}</DropdownMenuItem>
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => {
-              authClient.signOut({
-                fetchOptions: {
-                  onSuccess: () => {
-                    location.reload();
-                  },
-                },
-              });
-            }}
-          >
-            Sign Out
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+	return (
+		<Menu>
+			<MenuTrigger render={<Button variant="outline" />}>{user?.name}</MenuTrigger>
+			<MenuPopup className="bg-card">
+				<MenuGroup>
+					<MenuGroupLabel>My Account</MenuGroupLabel>
+					<MenuSeparator />
+					<MenuItem>{user?.email}</MenuItem>
+					<MenuItem
+						variant="destructive"
+						onClick={() => {
+							authClient.signOut({
+								fetchOptions: {
+									onSuccess: () => {
+										location.reload();
+									},
+								},
+							});
+						}}
+					>
+						Sign Out
+					</MenuItem>
+				</MenuGroup>
+			</MenuPopup>
+		</Menu>
+	);
 }
