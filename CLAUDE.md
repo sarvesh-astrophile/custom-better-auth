@@ -11,7 +11,7 @@ A full-stack web application built with Better-T-Stack, featuring TanStack Start
 - **State Management**: TanStack React Query v5.80.6
 - **Forms**: TanStack React Form v1.28.0
 - **Styling**: Tailwind CSS v4 with tailwind-merge, class-variance-authority
-- **UI Components**: shadcn/ui with Base UI React, Lucide icons
+- **UI Components**: coss ui (Base UI React components), Lucide icons
 - **Build Tool**: Vite v7
 - **Deployment**: Cloudflare (via @cloudflare/vite-plugin)
 
@@ -33,7 +33,7 @@ custom-better-auth/
 │   └── web/                    # TanStack Start frontend
 │       ├── src/
 │       │   ├── components/     # React components
-│       │   │   ├── ui/         # shadcn/ui components
+│       │   │   ├── ui/         # coss ui components
 │       │   │   ├── header.tsx
 │       │   │   ├── sign-in-form.tsx
 │       │   │   ├── sign-up-form.tsx
@@ -66,7 +66,14 @@ custom-better-auth/
 │   ├── env/                    # Environment variable schemas
 │   │   └── src/web.ts          # Web app env (VITE_CONVEX_URL, VITE_CONVEX_SITE_URL)
 │   └── infra/                  # Infrastructure (Alchemy deployment)
+├── docs/                       # Documentation
+│   └── better-auth/            # Better Auth guides
+│       ├── convex-triggers.md  # Convex triggers setup
+│       ├── local-install.md    # Local component installation
+│       ├── rate-limit.md       # Rate limiting configuration
+│       └── tanstack-guide.md   # TanStack integration guide
 ├── .claude/commands/           # Claude Code custom commands
+│   ├── coss-ui.md              # coss ui component patterns
 │   ├── simple-ask.md           # Interactive interview command
 │   └── update-memory.md        # Memory update workflow
 ├── .zed/settings.json          # Zed editor configuration
@@ -140,12 +147,14 @@ bun destroy          # Destroy infrastructure
 - Auth state passed through route context
 
 ### UI Patterns
-- shadcn/ui components in `components/ui/`
-- Theme support via `next-themes`
-- Toast notifications via Sonner
+- coss ui components in `components/ui/` (based on Base UI React)
+- Field, FieldLabel, FieldError for form fields
+- Menu components (replaces DropdownMenu)
+- Custom Toast using `@base-ui/react/toast`
 
 ## Recent Changes
 
-1. **a3e0a99** - Configure local Better Auth component and schema
-2. **e5697cf** - Add Zed editor configuration file
-3. **b68117f** - Generate TanStack Router tree and update gitignore
+1. **4f4b5b5** - Add Better Auth Convex documentation (triggers, local-install, tanstack-guide)
+2. **5d517d4** - Add rate limit documentation
+3. **30f56b9** - Migrate from shadcn/ui to coss ui components (Field, Menu, Toast)
+4. **b514ad0** - Update @tanstack/store dependency and enable auth verbose logging
