@@ -9,7 +9,11 @@ import { Button } from "./ui/button";
 import { Field, FieldError, FieldLabel } from "./ui/field";
 import { Input } from "./ui/input";
 
-export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void }) {
+export default function SignInForm({
+	onSwitchToSignUp,
+}: {
+	onSwitchToSignUp: () => void;
+}) {
 	const navigate = useNavigate({
 		from: "/",
 	});
@@ -52,7 +56,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
 
 	return (
 		<div className="mx-auto mt-10 w-full max-w-md p-6">
-			<h1 className="mb-6 text-center text-3xl font-bold">Welcome Back</h1>
+			<h1 className="mb-6 text-center font-bold text-3xl">Welcome Back</h1>
 
 			<form
 				onSubmit={(e) => {
@@ -64,7 +68,10 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
 			>
 				<form.Field name="email">
 					{(field) => (
-						<Field name={field.name} invalid={field.state.meta.errors.length > 0}>
+						<Field
+							name={field.name}
+							invalid={field.state.meta.errors.length > 0}
+						>
 							<FieldLabel>Email</FieldLabel>
 							<Input
 								type="email"
@@ -81,7 +88,10 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
 
 				<form.Field name="password">
 					{(field) => (
-						<Field name={field.name} invalid={field.state.meta.errors.length > 0}>
+						<Field
+							name={field.name}
+							invalid={field.state.meta.errors.length > 0}
+						>
 							<FieldLabel>Password</FieldLabel>
 							<Input
 								type="password"

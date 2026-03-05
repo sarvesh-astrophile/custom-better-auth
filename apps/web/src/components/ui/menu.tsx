@@ -19,7 +19,10 @@ function MenuPopup({
 	className,
 	...props
 }: MenuPrimitive.Popup.Props &
-	Pick<MenuPrimitive.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">) {
+	Pick<
+		MenuPrimitive.Positioner.Props,
+		"align" | "alignOffset" | "side" | "sideOffset"
+	>) {
 	return (
 		<MenuPrimitive.Portal>
 			<MenuPrimitive.Positioner
@@ -32,13 +35,13 @@ function MenuPopup({
 				<MenuPrimitive.Popup
 					data-slot="menu-popup"
 					className={cn(
-						"bg-popover text-popover-foreground min-w-32 rounded-none shadow-md",
+						"min-w-32 rounded-none bg-popover text-popover-foreground shadow-md",
 						"ring-1 ring-foreground/10",
-						"data-open:animate-in data-closed:animate-out",
+						"data-closed:animate-out data-open:animate-in",
 						"data-closed:fade-out-0 data-open:fade-in-0",
 						"data-closed:zoom-out-95 data-open:zoom-in-95",
-						"origin-(--transform-origin) z-50",
-						"max-h-(--available-height) overflow-x-hidden overflow-y-auto",
+						"z-50 origin-(--transform-origin)",
+						"max-h-(--available-height) overflow-y-auto overflow-x-hidden",
 						className,
 					)}
 					{...props}
@@ -61,7 +64,11 @@ function MenuGroupLabel({
 		<MenuPrimitive.GroupLabel
 			data-slot="menu-group-label"
 			data-inset={inset}
-			className={cn("text-muted-foreground px-2 py-2 text-xs", inset && "pl-8", className)}
+			className={cn(
+				"px-2 py-2 text-muted-foreground text-xs",
+				inset && "pl-8",
+				className,
+			)}
 			{...props}
 		/>
 	);
@@ -83,7 +90,7 @@ function MenuItem({
 			data-variant={variant}
 			className={cn(
 				"relative flex cursor-default items-center gap-2 rounded-none px-2 py-2 text-xs",
-				"outline-hidden select-none",
+				"select-none outline-hidden",
 				"focus:bg-accent focus:text-accent-foreground",
 				"data-disabled:pointer-events-none data-disabled:opacity-50",
 				inset && "pl-8",
@@ -102,7 +109,7 @@ function MenuSeparator({ className, ...props }: MenuPrimitive.Separator.Props) {
 	return (
 		<MenuPrimitive.Separator
 			data-slot="menu-separator"
-			className={cn("bg-border -mx-1 h-px", className)}
+			className={cn("-mx-1 h-px bg-border", className)}
 			{...props}
 		/>
 	);
@@ -125,7 +132,7 @@ function MenuSubTrigger({
 			data-slot="menu-sub-trigger"
 			data-inset={inset}
 			className={cn(
-				"focus:bg-accent focus:text-accent-foreground data-open:bg-accent data-open:text-accent-foreground gap-2 rounded-none px-2 py-2 text-xs flex cursor-default items-center outline-hidden select-none",
+				"flex cursor-default select-none items-center gap-2 rounded-none px-2 py-2 text-xs outline-hidden focus:bg-accent focus:text-accent-foreground data-open:bg-accent data-open:text-accent-foreground",
 				inset && "pl-8",
 				className,
 			)}
@@ -147,7 +154,7 @@ function MenuCheckboxItem({
 		<MenuPrimitive.CheckboxItem
 			data-slot="menu-checkbox-item"
 			className={cn(
-				"focus:bg-accent focus:text-accent-foreground gap-2 rounded-none py-2 pr-8 pl-2 text-xs relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50",
+				"relative flex cursor-default select-none items-center gap-2 rounded-none py-2 pr-8 pl-2 text-xs outline-hidden focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50",
 				className,
 			)}
 			checked={checked}
@@ -167,12 +174,16 @@ function MenuRadioGroup({ ...props }: MenuPrimitive.RadioGroup.Props) {
 	return <MenuPrimitive.RadioGroup data-slot="menu-radio-group" {...props} />;
 }
 
-function MenuRadioItem({ className, children, ...props }: MenuPrimitive.RadioItem.Props) {
+function MenuRadioItem({
+	className,
+	children,
+	...props
+}: MenuPrimitive.RadioItem.Props) {
 	return (
 		<MenuPrimitive.RadioItem
 			data-slot="menu-radio-item"
 			className={cn(
-				"focus:bg-accent focus:text-accent-foreground gap-2 rounded-none py-2 pr-8 pl-2 text-xs relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50",
+				"relative flex cursor-default select-none items-center gap-2 rounded-none py-2 pr-8 pl-2 text-xs outline-hidden focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50",
 				className,
 			)}
 			{...props}
@@ -191,7 +202,10 @@ function MenuShortcut({ className, ...props }: React.ComponentProps<"span">) {
 	return (
 		<span
 			data-slot="menu-shortcut"
-			className={cn("text-muted-foreground ml-auto text-xs tracking-widest", className)}
+			className={cn(
+				"ml-auto text-muted-foreground text-xs tracking-widest",
+				className,
+			)}
 			{...props}
 		/>
 	);

@@ -17,7 +17,7 @@ function FieldLabel({ className, ...props }: FieldPrimitive.Label.Props) {
 		<FieldPrimitive.Label
 			data-slot="field-label"
 			className={cn(
-				"text-xs font-medium leading-none",
+				"font-medium text-xs leading-none",
 				"peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
 				className,
 			)}
@@ -26,11 +26,14 @@ function FieldLabel({ className, ...props }: FieldPrimitive.Label.Props) {
 	);
 }
 
-function FieldDescription({ className, ...props }: FieldPrimitive.Description.Props) {
+function FieldDescription({
+	className,
+	...props
+}: FieldPrimitive.Description.Props) {
 	return (
 		<FieldPrimitive.Description
 			data-slot="field-description"
-			className={cn("text-xs text-muted-foreground", className)}
+			className={cn("text-muted-foreground text-xs", className)}
 			{...props}
 		/>
 	);
@@ -40,7 +43,7 @@ function FieldError({ className, ...props }: FieldPrimitive.Error.Props) {
 	return (
 		<FieldPrimitive.Error
 			data-slot="field-error"
-			className={cn("text-xs text-destructive-foreground", className)}
+			className={cn("text-destructive-foreground text-xs", className)}
 			{...props}
 		/>
 	);

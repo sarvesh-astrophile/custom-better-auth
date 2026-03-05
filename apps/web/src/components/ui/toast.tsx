@@ -28,7 +28,13 @@ function ToastProvider({
 	position = "bottom-right",
 }: {
 	children: React.ReactNode;
-	position?: "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
+	position?:
+		| "top-left"
+		| "top-center"
+		| "top-right"
+		| "bottom-left"
+		| "bottom-center"
+		| "bottom-right";
 }) {
 	const [toasts, setToasts] = useState<ToastData[]>([]);
 
@@ -56,7 +62,10 @@ function ToastProvider({
 				{children}
 				<Toast.Viewport
 					data-slot="toast-viewport"
-					className={cn("fixed z-50 flex flex-col gap-2 p-4", positionClasses[position])}
+					className={cn(
+						"fixed z-50 flex flex-col gap-2 p-4",
+						positionClasses[position],
+					)}
 				>
 					{toasts.map((toast) => (
 						<Toast.Root
@@ -70,27 +79,27 @@ function ToastProvider({
 							data-slot="toast"
 							data-type={toast.type}
 							className={cn(
-								"bg-card text-card-foreground rounded-none shadow-lg",
+								"rounded-none bg-card text-card-foreground shadow-lg",
 								"ring-1 ring-foreground/10",
-								"data-open:animate-in data-closed:animate-out",
+								"data-closed:animate-out data-open:animate-in",
 								"data-closed:fade-out-0 data-open:fade-in-0",
 								"data-closed:slide-out-to-right data-open:slide-in-from-right",
-								"p-4 pr-8 relative min-w-72",
+								"relative min-w-72 p-4 pr-8",
 								toast.type && typeStyles[toast.type],
 							)}
 						>
 							{toast.title && (
-								<Toast.Title className="text-sm font-medium">
+								<Toast.Title className="font-medium text-sm">
 									{toast.title}
 								</Toast.Title>
 							)}
 							{toast.description && (
-								<Toast.Description className="text-xs text-muted-foreground">
+								<Toast.Description className="text-muted-foreground text-xs">
 									{toast.description}
 								</Toast.Description>
 							)}
 							<Toast.Close
-								className="absolute right-2 top-2 opacity-50 hover:opacity-100"
+								className="absolute top-2 right-2 opacity-50 hover:opacity-100"
 								onClick={() => remove(toast.id)}
 							>
 								×
