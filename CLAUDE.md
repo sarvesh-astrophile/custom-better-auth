@@ -19,6 +19,7 @@ A full-stack web application built with Better-T-Stack, featuring TanStack Start
 - **Database**: Convex (serverless)
 - **Auth**: Better-Auth v1.4.9 with @convex-dev/better-auth integration
 - **Email/Password authentication enabled**
+- **Organization plugin enabled** (teams, members, invitations)
 
 ### Monorepo Tools
 - **Package Manager**: Bun v1.2.23
@@ -35,9 +36,15 @@ custom-better-auth/
 │       │   ├── components/     # React components
 │       │   │   ├── ui/         # coss ui components
 │       │   │   ├── header.tsx
+│       │   │   ├── theme-toggle.tsx    # Dark/light mode toggle
 │       │   │   ├── sign-in-form.tsx
 │       │   │   ├── sign-up-form.tsx
-│       │   │   └── user-menu.tsx
+│       │   │   ├── user-menu.tsx
+│       │   │   ├── organization-switcher.tsx
+│       │   │   └── organization/       # Organization management
+│       │   │       ├── general-settings-tab.tsx
+│       │   │       ├── invite-member-dialog.tsx
+│       │   │       └── members-tab.tsx
 │       │   ├── lib/
 │       │   │   ├── auth-client.ts   # Client-side auth
 │       │   │   ├── auth-server.ts   # Server-side auth handlers
@@ -45,7 +52,14 @@ custom-better-auth/
 │       │   ├── routes/
 │       │   │   ├── __root.tsx       # Root layout with auth provider
 │       │   │   ├── index.tsx        # Home page
-│       │   │   ├── dashboard.tsx    # Protected dashboard
+│       │   │   ├── dashboard.tsx    # Protected dashboard (redirects to /dashboard/)
+│       │   │   ├── dashboard/
+│       │   │   │   ├── route.tsx    # Dashboard layout with org context
+│       │   │   │   ├── index.tsx    # Dashboard home
+│       │   │   │   └── org/
+│       │   │   │       └── settings.tsx   # Organization settings
+│       │   │   ├── create-organization.tsx  # Create new org
+│       │   │   ├── accept-invitation.$id.tsx # Accept org invite
 │       │   │   └── api/auth/$.ts    # Auth API route
 │       │   ├── router.tsx           # Router configuration
 │       │   └── index.css            # Global styles
@@ -71,7 +85,23 @@ custom-better-auth/
 │       ├── convex-triggers.md  # Convex triggers setup
 │       ├── local-install.md    # Local component installation
 │       ├── rate-limit.md       # Rate limiting configuration
-│       └── tanstack-guide.md   # TanStack integration guide
+│       ├── tanstack-guide.md   # TanStack integration guide
+│       ├── organization.md     # Organization plugin guide
+│       ├── organization-frontend-spec.md  # Org UI specifications
+│       ├── organization-spec.md           # Org backend specifications
+│       ├── 2fa.md              # Two-factor authentication
+│       ├── api-key.md          # API key management
+│       ├── captcha.md          # Captcha integration
+│       ├── email-otp.md        # Email OTP authentication
+│       ├── magic-link.md       # Magic link authentication
+│       ├── generic-oauth.md    # Generic OAuth setup
+│       ├── username.md         # Username authentication
+│       ├── phone-number.md     # Phone number authentication
+│       ├── pass-key.md         # Passkey/WebAuthn
+│       ├── one-tap.md          # Google One Tap
+│       ├── have-i-been-pwned.md # Password breach check
+│       ├── last-login-method.md # Track login methods
+│       └── dodopayments.md     # Dodo Payments integration
 ├── .claude/commands/           # Claude Code custom commands
 │   ├── coss-ui.md              # coss ui component patterns
 │   ├── simple-ask.md           # Interactive interview command
@@ -85,6 +115,7 @@ custom-better-auth/
 ```bash
 bun dev              # Start all services in dev mode
 bun dev:web          # Start web frontend via infra package
+bun dev:bare         # Start web frontend without infrastructure overhead
 bun dev:server       # Start Convex backend
 bun dev:setup        # Setup Convex backend (first time)
 bun build            # Build all packages
@@ -128,36 +159,69 @@ bun destroy          # Destroy infrastructure
 ### Authentication Flow
 - Uses `@convex-dev/better-auth` with local component setup
 - Local component in `convex/betterAuth/` for schema control
-- `createAuthOptions()` - reusable auth configuration function
+- `createAuthOptions()` - reusable auth configuration function with plugins
 - `createAuth(ctx)` - creates auth instance with adapter
 - Client: `authClient` from `better-auth/react` with Convex plugin
 - Server: `convexBetterAuthReactStart` handler for SSR
 - Protected routes via `beforeLoad` in root route
+- Organization plugin configured with 48-hour invitation expiry
+- Invitation emails sent via `sendInvitationEmail` in `betterAuth/email.ts`
 
 ### Better Auth Schema Tables
-- **user**: name, email, emailVerified, image, createdAt, updatedAt, userId
-- **session**: expiresAt, token, createdAt, updatedAt, ipAddress, userAgent, userId
-- **account**: accountId, providerId, userId, tokens, password, createdAt, updatedAt
+- **user**: name, email, emailVerified, image, createdAt, updatedAt, userId (indexes: email_name, name, userId)
+- **session**: expiresAt, token, createdAt, updatedAt, ipAddress, userAgent, userId, activeOrganizationId
+- **account**: accountId, providerId, userId, accessToken, refreshToken, idToken, accessTokenExpiresAt, refreshTokenExpiresAt, scope, password, createdAt, updatedAt
 - **verification**: identifier, value, expiresAt, createdAt, updatedAt
 - **jwks**: publicKey, privateKey, createdAt, expiresAt
+- **organization**: name, slug, logo, metadata, createdAt (organization plugin)
+- **member**: userId, organizationId, role, createdAt (organization membership)
+- **invitation**: email, inviterId, organizationId, role, status, expiresAt, createdAt (org invitations)
+
+### Organization Management
+- Better Auth organization plugin enabled
+- Create organizations via `/create-organization` route
+- Organization settings at `/dashboard/org/settings`
+- Members tab with role management (owner, admin, member)
+- Invite members via email with `/accept-invitation/$id` route
+- Organization switcher in header for multi-org users
+- Active organization context in dashboard layout
 
 ### Routing
 - File-based routing with TanStack Router
 - Route tree auto-generated in `routeTree.gen.ts`
 - Auth state passed through route context
+- Nested dashboard routes with layout at `dashboard/route.tsx`
+- Invitation acceptance route with dynamic ID parameter
 
 ### UI Patterns
 - coss ui components in `components/ui/` (based on Base UI React)
 - Field, FieldLabel, FieldError for form fields
 - Menu components (replaces DropdownMenu)
 - Custom Toast using `@base-ui/react/toast`
+- Theme system with dark/light mode toggle (`ThemeToggle` component)
+- Inline script in `__root.tsx` prevents theme flash on load
+- Organization switcher in header for multi-tenant UI
+- Avatar, Badge, Dialog, Select, Table, Tabs, Textarea components
+- Empty state component for lists with no data
+- Spinner component for loading states
 
 ## Recent Changes
 
-1. **4f4b5b5** - Add Better Auth Convex documentation (triggers, local-install, tanstack-guide)
-2. **5d517d4** - Add rate limit documentation
-3. **30f56b9** - Migrate from shadcn/ui to coss ui components (Field, Menu, Toast)
-4. **b514ad0** - Update @tanstack/store dependency and enable auth verbose logging
+1. **e45f78d** - Add TanStack Router and Convex guidelines to CLAUDE.md
+2. **dc07f8c** - Add organization management UI and plugin (routes, components, specs)
+3. **7d63609** - Add ThemeToggle component for dark/light mode
+4. **d08e34c** - Add theme toggle and dark-theme init with inline script (prevents flash)
+5. **d566fc6** - Update project memory
+6. **4f4b5b5** - Add Better Auth Convex documentation (triggers, local-install, tanstack-guide)
+7. **5d517d4** - Add rate limit documentation
+8. **30f56b9** - Migrate from shadcn/ui to coss ui components (Field, Menu, Toast)
+9. **b514ad0** - Update @tanstack/store dependency and enable auth verbose logging
+10. **9394c6d** - Add Better Auth plugin documentation (2FA, API Key, Captcha, OAuth, etc.)
+11. **1ce3ea9** - Update CLAUDE.md and add dev:bare script
+12. **a3e0a99** - Configure local Better Auth component and schema
+13. **e5697cf** - Add Zed editor configuration file
+14. **b68117f** - Generate TanStack Router tree and update gitignore
+15. **1bba3d2** - Initial commit
 
 
 # TanStack Router Guidelines
