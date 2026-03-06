@@ -18,7 +18,8 @@ A full-stack web application built with Better-T-Stack, featuring TanStack Start
 ### Backend (packages/backend)
 - **Database**: Convex (serverless)
 - **Auth**: Better-Auth v1.4.9 with @convex-dev/better-auth integration
-- **Email/Password authentication enabled**
+- **Email/Password authentication enabled** with email verification required
+- **Email OTP plugin** for verification and password reset flows
 - **Organization plugin enabled** (teams, members, invitations)
 
 ### Monorepo Tools
@@ -39,6 +40,7 @@ custom-better-auth/
 │       │   │   ├── theme-toggle.tsx    # Dark/light mode toggle
 │       │   │   ├── sign-in-form.tsx
 │       │   │   ├── sign-up-form.tsx
+│       │   │   ├── otp-input.tsx       # OTP input component
 │       │   │   ├── user-menu.tsx
 │       │   │   ├── organization-switcher.tsx
 │       │   │   └── organization/       # Organization management
@@ -60,6 +62,8 @@ custom-better-auth/
 │       │   │   │       └── settings.tsx   # Organization settings
 │       │   │   ├── create-organization.tsx  # Create new org
 │       │   │   ├── accept-invitation.$id.tsx # Accept org invite
+│       │   │   ├── verify-email.tsx         # Email verification with OTP
+│       │   │   ├── forgot-password.tsx      # Password reset with OTP
 │       │   │   └── api/auth/$.ts    # Auth API route
 │       │   ├── router.tsx           # Router configuration
 │       │   └── index.css            # Global styles
@@ -87,8 +91,7 @@ custom-better-auth/
 │       ├── rate-limit.md       # Rate limiting configuration
 │       ├── tanstack-guide.md   # TanStack integration guide
 │       ├── organization.md     # Organization plugin guide
-│       ├── organization-frontend-spec.md  # Org UI specifications
-│       ├── organization-spec.md           # Org backend specifications
+│       ├── email-otp-spec.md   # Email OTP implementation spec
 │       ├── 2fa.md              # Two-factor authentication
 │       ├── api-key.md          # API key management
 │       ├── captcha.md          # Captcha integration
@@ -166,6 +169,19 @@ bun destroy          # Destroy infrastructure
 - Protected routes via `beforeLoad` in root route
 - Organization plugin configured with 48-hour invitation expiry
 - Invitation emails sent via `sendInvitationEmail` in `betterAuth/email.ts`
+- **Email OTP plugin** for verification and password reset (6-digit codes, 5-min expiry, 3 attempts)
+- Rate limiting: 3 requests per 10 minutes for OTP endpoints
+- `sendOTPEmail` function for sending verification and password reset emails
+
+### Email OTP Authentication
+- Email verification required for new accounts (`requireEmailVerification: true`)
+- 6-digit OTP sent via email for verification (expires in 5 minutes)
+- Auto-send OTP on signup (`sendVerificationOnSignUp: true`)
+- Password reset flow with OTP verification at `/forgot-password`
+- Email verification page at `/verify-email` with email input fallback
+- `OTPInput` component with auto-submit, paste support, and resend cooldown
+- `EmailVerificationGuard` in root route redirects unverified users
+- Rate limiting: 3 OTP requests per 10 minutes per endpoint
 
 ### Better Auth Schema Tables
 - **user**: name, email, emailVerified, image, createdAt, updatedAt, userId (indexes: email_name, name, userId)
@@ -204,24 +220,25 @@ bun destroy          # Destroy infrastructure
 - Avatar, Badge, Dialog, Select, Table, Tabs, Textarea components
 - Empty state component for lists with no data
 - Spinner component for loading states
+- OTPInput component for 6-digit code entry with auto-submit and paste support
 
 ## Recent Changes
 
-1. **e45f78d** - Add TanStack Router and Convex guidelines to CLAUDE.md
-2. **dc07f8c** - Add organization management UI and plugin (routes, components, specs)
-3. **7d63609** - Add ThemeToggle component for dark/light mode
-4. **d08e34c** - Add theme toggle and dark-theme init with inline script (prevents flash)
-5. **d566fc6** - Update project memory
-6. **4f4b5b5** - Add Better Auth Convex documentation (triggers, local-install, tanstack-guide)
-7. **5d517d4** - Add rate limit documentation
-8. **30f56b9** - Migrate from shadcn/ui to coss ui components (Field, Menu, Toast)
-9. **b514ad0** - Update @tanstack/store dependency and enable auth verbose logging
-10. **9394c6d** - Add Better Auth plugin documentation (2FA, API Key, Captcha, OAuth, etc.)
-11. **1ce3ea9** - Update CLAUDE.md and add dev:bare script
-12. **a3e0a99** - Configure local Better Auth component and schema
-13. **e5697cf** - Add Zed editor configuration file
-14. **b68117f** - Generate TanStack Router tree and update gitignore
-15. **1bba3d2** - Initial commit
+1. **52a8c25** - Add Email OTP verification and password reset (routes, components, backend plugin)
+2. **64b461b** - Remove Better Auth organization specs (organization-spec.md, organization-frontend-spec.md)
+3. **5b5b1d3** - Update CLAUDE.md and simple-ask command with organization plugin docs
+4. **e45f78d** - Add TanStack Router and Convex guidelines to CLAUDE.md
+5. **dc07f8c** - Add organization management UI and plugin (routes, components, specs)
+6. **7d63609** - Add ThemeToggle component for dark/light mode
+7. **d08e34c** - Add theme toggle and dark-theme init with inline script (prevents flash)
+8. **d566fc6** - Update project memory
+9. **4f4b5b5** - Add Better Auth Convex documentation (triggers, local-install, tanstack-guide)
+10. **5d517d4** - Add rate limit documentation
+11. **30f56b9** - Migrate from shadcn/ui to coss ui components (Field, Menu, Toast)
+12. **b514ad0** - Update @tanstack/store dependency and enable auth verbose logging
+13. **9394c6d** - Add Better Auth plugin documentation (2FA, API Key, Captcha, OAuth, etc.)
+14. **1ce3ea9** - Update CLAUDE.md and add dev:bare script
+15. **a3e0a99** - Configure local Better Auth component and schema
 
 
 # TanStack Router Guidelines

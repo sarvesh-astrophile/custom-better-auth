@@ -1,9 +1,9 @@
 debug in convex
 
 Plugins
-[] Email OTP
+[x] Email OTP
 [] Generic OAuth
-[] Magic Link
+[x] Magic Link
 [] One Tap
 [] Pass Key
 [] Phone Number
