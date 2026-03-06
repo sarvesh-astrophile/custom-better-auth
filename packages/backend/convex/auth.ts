@@ -11,6 +11,39 @@ import authSchema from "./betterAuth/schema";
 
 const siteUrl = process.env.SITE_URL!;
 
+// Environment-based rate limit configuration
+const isProd = process.env.NODE_ENV === "production";
+
+// Rate limits per environment
+const RATE_LIMITS = {
+	production: {
+		window: 60,
+		max: 100,
+		signInWindow: 10,
+		signInMax: 5,
+		signUpWindow: 60,
+		signUpMax: 3,
+		otpSendWindow: 600, // 10 minutes
+		otpSendMax: 3,
+		otpVerifyWindow: 600,
+		otpVerifyMax: 10,
+	},
+	development: {
+		window: 60,
+		max: 1000, // More lenient in dev
+		signInWindow: 10,
+		signInMax: 20,
+		signUpWindow: 60,
+		signUpMax: 10,
+		otpSendWindow: 60, // 1 minute in dev
+		otpSendMax: 10,
+		otpVerifyWindow: 60,
+		otpVerifyMax: 20,
+	},
+};
+
+const limits = isProd ? RATE_LIMITS.production : RATE_LIMITS.development;
+
 export const authComponent = createClient<DataModel, typeof authSchema>(
 	components.betterAuth,
 	{
@@ -29,16 +62,45 @@ export const createAuthOptions = () => {
 			enabled: true,
 			requireEmailVerification: true,
 		},
+		// Advanced IP configuration for Cloudflare
+		advanced: {
+			ipAddress: {
+				// Check multiple headers for IP detection
+				// Cloudflare sanitizes x-forwarded-for, so we include it
+				ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for"],
+			},
+		},
+		// Rate limit configuration
 		rateLimit: {
+			// Default rate limits
+			window: limits.window,
+			max: limits.max,
+			// Custom rules for sensitive endpoints
 			customRules: {
+				// OTP endpoints - strict limits to prevent abuse
 				"/email-otp/send-verification-otp": {
-					window: 600, // 10 minutes
-					max: 3, // 3 requests per window
+					window: limits.otpSendWindow,
+					max: limits.otpSendMax,
 				},
 				"/email-otp/request-password-reset": {
-					window: 600, // 10 minutes
-					max: 3, // 3 requests per window
+					window: limits.otpSendWindow,
+					max: limits.otpSendMax,
 				},
+				"/email-otp/verify-otp": {
+					window: limits.otpVerifyWindow,
+					max: limits.otpVerifyMax,
+				},
+				// Authentication endpoints
+				"/sign-in/email": {
+					window: limits.signInWindow,
+					max: limits.signInMax,
+				},
+				"/sign-up/email": {
+					window: limits.signUpWindow,
+					max: limits.signUpMax,
+				},
+				// Disable rate limiting for session retrieval
+				"/get-session": false,
 			},
 		},
 		plugins: [

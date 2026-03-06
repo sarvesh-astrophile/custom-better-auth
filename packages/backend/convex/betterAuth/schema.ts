@@ -103,6 +103,12 @@ export const tables = {
 		.index("organizationId", ["organizationId"])
 		.index("email_organizationId", ["email", "organizationId"])
 		.index("expiresAt", ["expiresAt"]),
+	rateLimit: defineTable({
+		key: v.string(),
+		count: v.number(),
+		lastRequest: v.number(),
+	})
+		.index("by_key", ["key"]),
 };
 
 const schema = defineSchema(tables);

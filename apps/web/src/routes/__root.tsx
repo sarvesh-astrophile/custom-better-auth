@@ -17,6 +17,7 @@ import type React from "react";
 import { ToastProvider } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth-client";
 import { getToken } from "@/lib/auth-server";
+import { useRateLimitToast } from "@/hooks/useRateLimitToast";
 
 import Header from "../components/header";
 import appCss from "../index.css?url";
@@ -80,6 +81,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
 	const context = useRouteContext({ from: Route.id });
+
+	// Listen for rate limit events and show toast notifications
+	useRateLimitToast();
+
 	return (
 		<ConvexBetterAuthProvider
 			client={context.convexQueryClient.convexClient}
