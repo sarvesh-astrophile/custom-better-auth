@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as CreateOrganizationRouteImport } from './routes/create-organization'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -17,6 +19,16 @@ import { Route as AcceptInvitationIdRouteImport } from './routes/accept-invitati
 import { Route as DashboardOrgSettingsRouteImport } from './routes/dashboard/org/settings'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreateOrganizationRoute = CreateOrganizationRouteImport.update({
   id: '/create-organization',
   path: '/create-organization',
@@ -57,6 +69,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/create-organization': typeof CreateOrganizationRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/accept-invitation/$id': typeof AcceptInvitationIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -65,6 +79,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-organization': typeof CreateOrganizationRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/accept-invitation/$id': typeof AcceptInvitationIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -75,6 +91,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/create-organization': typeof CreateOrganizationRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/accept-invitation/$id': typeof AcceptInvitationIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -86,6 +104,8 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/create-organization'
+    | '/forgot-password'
+    | '/verify-email'
     | '/accept-invitation/$id'
     | '/dashboard/'
     | '/api/auth/$'
@@ -94,6 +114,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/create-organization'
+    | '/forgot-password'
+    | '/verify-email'
     | '/accept-invitation/$id'
     | '/dashboard'
     | '/api/auth/$'
@@ -103,6 +125,8 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/create-organization'
+    | '/forgot-password'
+    | '/verify-email'
     | '/accept-invitation/$id'
     | '/dashboard/'
     | '/api/auth/$'
@@ -113,12 +137,28 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   CreateOrganizationRoute: typeof CreateOrganizationRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  VerifyEmailRoute: typeof VerifyEmailRoute
   AcceptInvitationIdRoute: typeof AcceptInvitationIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/create-organization': {
       id: '/create-organization'
       path: '/create-organization'
@@ -189,6 +229,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   CreateOrganizationRoute: CreateOrganizationRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  VerifyEmailRoute: VerifyEmailRoute,
   AcceptInvitationIdRoute: AcceptInvitationIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

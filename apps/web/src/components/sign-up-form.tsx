@@ -35,9 +35,14 @@ export default function SignUpForm({
 				{
 					onSuccess: () => {
 						navigate({
-							to: "/dashboard",
+							to: "/verify-email",
+							search: { email: value.email },
 						});
-						toast({ title: "Sign up successful", type: "success" });
+						toast({
+							title: "Account created",
+							description: "Please check your email for verification code",
+							type: "success",
+						});
 					},
 					onError: (error) => {
 						toast({

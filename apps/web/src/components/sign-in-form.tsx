@@ -38,10 +38,28 @@ export default function SignInForm({
 						toast({ title: "Sign in successful", type: "success" });
 					},
 					onError: (error) => {
-						toast({
-							title: error.error.message || error.error.statusText,
-							type: "error",
-						});
+						// Check if error is due to unverified email
+						const errorMessage = error.error.message || "";
+						if (
+							errorMessage.toLowerCase().includes("verify") ||
+							errorMessage.toLowerCase().includes("verification") ||
+							error.error.statusCode === 403
+						) {
+							navigate({
+								to: "/verify-email",
+								search: { email: value.email },
+							});
+							toast({
+								title: "Email not verified",
+								description: "Please verify your email to continue",
+								type: "warning",
+							});
+						} else {
+							toast({
+								title: error.error.message || error.error.statusText,
+								type: "error",
+							});
+						}
 					},
 				},
 			);
@@ -102,6 +120,17 @@ export default function SignInForm({
 							{field.state.meta.errors.map((error) => (
 								<FieldError key={error?.message}>{error?.message}</FieldError>
 							))}
+							<div className="flex justify-end">
+								<Button
+									type="button"
+									variant="link"
+									size="sm"
+									onClick={() => navigate({ to: "/forgot-password" })}
+									className="h-auto p-0 text-xs"
+								>
+									Forgot password?
+								</Button>
+							</div>
 						</Field>
 					)}
 				</form.Field>

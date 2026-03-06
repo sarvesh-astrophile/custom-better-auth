@@ -4,12 +4,15 @@ import type { QueryClient } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
 	HeadContent,
+	Navigate,
 	Outlet,
 	Scripts,
+	useLocation,
 	useRouteContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
+import type React from "react";
 
 import { ToastProvider } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth-client";
@@ -26,6 +29,15 @@ export interface RouterAppContext {
 	queryClient: QueryClient;
 	convexQueryClient: ConvexQueryClient;
 }
+
+// Routes that should be excluded from email verification check
+const EXCLUDED_FROM_VERIFICATION_CHECK = [
+	"/verify-email",
+	"/forgot-password",
+	"/sign-in",
+	"/sign-up",
+	"/accept-invitation",
+];
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
 	head: () => ({
@@ -55,6 +67,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 		if (token) {
 			ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
 		}
+
+		// Email verification check happens client-side in EmailVerificationGuard
+		// Server-side we just pass through since we don't have easy access to user data here
+
 		return {
 			isAuthenticated: !!token,
 			token,
@@ -90,7 +106,9 @@ function RootDocument() {
 					<body>
 						<div className="grid h-svh grid-rows-[auto_1fr]">
 							<Header />
-							<Outlet />
+							<EmailVerificationGuard>
+								<Outlet />
+							</EmailVerificationGuard>
 						</div>
 						<TanStackRouterDevtools position="bottom-left" />
 						<Scripts />
@@ -99,4 +117,27 @@ function RootDocument() {
 			</ToastProvider>
 		</ConvexBetterAuthProvider>
 	);
+}
+
+function EmailVerificationGuard({ children }: { children: React.ReactNode }) {
+	const location = useLocation();
+	const { data: session, isPending } = authClient.useSession();
+
+	// Don't check on excluded routes
+	const isExcluded = EXCLUDED_FROM_VERIFICATION_CHECK.some((path) =>
+		location.pathname.startsWith(path),
+	);
+
+	if (isExcluded || isPending) {
+		return <>{children}</>;
+	}
+
+	// If user is authenticated but email is not verified, redirect to verify page
+	if (session?.user && !session.user.emailVerified) {
+		return (
+			<Navigate to="/verify-email" search={{ email: session.user.email }} />
+		);
+	}
+
+	return <>{children}</>;
 }

@@ -15,8 +15,8 @@ function OrganizationSettingsPage() {
 	return (
 		<div className="space-y-4">
 			<div>
-				<h1 className="text-lg font-medium">Organization Settings</h1>
-				<p className="text-xs text-muted-foreground">
+				<h1 className="font-medium text-lg">Organization Settings</h1>
+				<p className="text-muted-foreground text-xs">
 					Manage your organization settings and members
 				</p>
 			</div>

@@ -11,7 +11,7 @@ Plugins
 [] Username
 [] Admin
 [] API Key
-[] Organization
+[x] Organization
 [] Captcha
 [] Have I Been Pwned
 [] Test Utils

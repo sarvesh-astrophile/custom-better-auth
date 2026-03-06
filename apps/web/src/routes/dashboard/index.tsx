@@ -11,13 +11,13 @@ function DashboardIndex() {
 
 	return (
 		<div className="space-y-4">
-			<p className="text-xs text-muted-foreground">
+			<p className="text-muted-foreground text-xs">
 				{privateData?.message || "Welcome to your dashboard"}
 			</p>
 			<div className="flex gap-2">
 				<Link
 					to="/dashboard/org/settings"
-					className="text-xs text-primary underline"
+					className="text-primary text-xs underline"
 				>
 					Organization Settings
 				</Link>

@@ -78,7 +78,9 @@ function AcceptInvitationPage() {
 				<Unauthenticated>
 					{showSignUp ? (
 						<div className="space-y-4">
-							<h1 className="font-bold text-2xl">Create account to accept invitation</h1>
+							<h1 className="font-bold text-2xl">
+								Create account to accept invitation
+							</h1>
 							<p className="text-muted-foreground">
 								Sign up to join this organization.
 							</p>
@@ -86,7 +88,9 @@ function AcceptInvitationPage() {
 						</div>
 					) : (
 						<div className="space-y-4">
-							<h1 className="font-bold text-2xl">Sign in to accept invitation</h1>
+							<h1 className="font-bold text-2xl">
+								Sign in to accept invitation
+							</h1>
 							<p className="text-muted-foreground">
 								You need to be signed in to accept this organization invitation.
 							</p>

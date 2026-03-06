@@ -18,7 +18,7 @@ function DashboardLayout() {
 			<Authenticated>
 				<div className="p-4">
 					<div className="mb-4 flex items-center justify-between">
-						<h1 className="text-lg font-medium">Dashboard</h1>
+						<h1 className="font-medium text-lg">Dashboard</h1>
 						<UserMenu />
 					</div>
 					<Outlet />
