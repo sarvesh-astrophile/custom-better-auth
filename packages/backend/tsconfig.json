@@ -1,0 +1,5 @@
+{
+	"extends": "@custom-better-auth/config/tsconfig.base.json",
+	"include": ["convex/**/*"],
+	"exclude": ["convex/_generated"]
+}
